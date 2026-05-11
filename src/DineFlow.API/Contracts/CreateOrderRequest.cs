@@ -1,8 +1,9 @@
-﻿namespace DineFlow.API.Contracts
+namespace DineFlow.API.Contracts
 {
     public class CreateOrderRequest
     {
-        public string Type { get; set; } = default!;
+        public OrderTypeDto? Type { get; set; }
         public Guid? TableId { get; set; }
+        public Guid? ActorId { get; set; }
     }
 }

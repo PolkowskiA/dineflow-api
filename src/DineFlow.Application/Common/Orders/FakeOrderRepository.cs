@@ -1,18 +1,16 @@
-﻿using DineFlow.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Collections.Concurrent;
+using DineFlow.Domain.Entities;
 
 namespace DineFlow.Application.Common.Orders
 {
     public class FakeOrderRepository : IOrderRepository
     {
-        private readonly List<Order> _orders = new();
+        private readonly ConcurrentDictionary<Guid, Order> _orders = new();
 
         public Order? GetById(Guid id)
-            => _orders.FirstOrDefault(x => x.Id == id);
+            => _orders.TryGetValue(id, out var order) ? order : null;
 
         public void Add(Order order)
-            => _orders.Add(order);
+            => _orders[order.Id] = order;
     }
 }

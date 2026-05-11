@@ -20,7 +20,7 @@ namespace DineFlow.Tests.Domain
 
             var handler = new AddItemToOrderCommandHandler(repo, productService);
 
-            var command = new AddItemToOrderCommand(order.Id, Guid.NewGuid(), 2);
+            var command = new AddItemToOrderCommand(order.Id, FakeProductService.BurgerId, 2);
 
             await handler.Handle(command, default);
 

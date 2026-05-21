@@ -10,6 +10,7 @@ using Scalar.AspNetCore;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
+using DineFlow.API.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,7 +52,26 @@ builder.Services.AddOpenApi(options =>
     });
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Frontend", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+
+builder.Services.AddAuthentication();
+builder.Services.AddAuthorization();
+
+builder.Services.AddSignalRServices();
+
 var app = builder.Build();
+
+app.UseRouting();
 
 app.Use(async (context, next) =>
 {
@@ -78,6 +98,13 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
+
+app.UseCors("Frontend");
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapSignalRHubs();
 
 app.Run();
 

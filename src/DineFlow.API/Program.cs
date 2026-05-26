@@ -11,6 +11,8 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using DineFlow.API.Extensions;
+using DineFlow.Infrastructure.Persistance;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +23,12 @@ builder.Services.AddSingleton<IProductService, FakeProductService>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserContext, ApiUserContext>();
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+   options.UseSqlServer(
+       builder.Configuration.GetConnectionString("DefaultConnection"));
+});
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>

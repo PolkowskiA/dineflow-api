@@ -1,7 +1,8 @@
 using DineFlow.Domain.Common.Exceptions;
+using DineFlow.Domain.Entities.OrderItems;
 using System.ComponentModel.DataAnnotations;
 
-namespace DineFlow.Domain.Entities
+namespace DineFlow.Domain.Entities.Orders
 {
     public class Order
     {
@@ -17,6 +18,7 @@ namespace DineFlow.Domain.Entities
         public Guid? CreatedBy { get; private set; }
         public Guid? LastModifiedBy { get; private set; }
         public DateTimeOffset? LastModifiedAt { get; private set; }
+
         [Timestamp]
         public byte[] RowVersion { get; private set; } = Array.Empty<byte>();
 

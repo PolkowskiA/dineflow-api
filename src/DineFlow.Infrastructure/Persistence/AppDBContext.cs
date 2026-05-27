@@ -1,23 +1,27 @@
-﻿using DineFlow.Domain.Entities;
+﻿using DineFlow.Domain.Entities.OrderItems;
+using DineFlow.Domain.Entities.Orders;
+using DineFlow.Domain.Entities.Products;
+using DineFlow.Infrastructure.Persistence.Configurations;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace DineFlow.Infrastructure.Persistance
+namespace DineFlow.Infrastructure.Persistence
 {
     public class AppDbContext : DbContext
     {
         public DbSet<Order> Orders => Set<Order>();
+        public DbSet<Product> Products => Set<Product>();
+        public DbSet<OrderItem> OrderItems => Set<OrderItem>();
 
-        public AppDbContext(DbContextOptions<AppDbContext> options)
+        public AppDbContext(DbContextOptions options)
             : base(options)
         {
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+            modelBuilder.ApplyConfiguration(new OrderConfiguration());
+            modelBuilder.ApplyConfiguration(new OrderItemConfiguration());
+            modelBuilder.ApplyConfiguration(new ProductConfiguration());
 
             base.OnModelCreating(modelBuilder);
         }

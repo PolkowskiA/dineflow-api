@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace DineFlow.Domain.Entities
+namespace DineFlow.Domain.Entities.OrderItems
 {
     public class OrderItem
     {
@@ -19,6 +19,7 @@ namespace DineFlow.Domain.Entities
         public DateTimeOffset? CancelledAt { get; private set; }
         public Guid? LastModifiedBy { get; private set; }
         public DateTimeOffset? LastModifiedAt { get; private set; }
+
         [Timestamp]
         public byte[] RowVersion { get; private set; } = Array.Empty<byte>();
 

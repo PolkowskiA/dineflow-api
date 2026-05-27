@@ -1,6 +1,7 @@
 using DineFlow.Domain;
 using DineFlow.Domain.Common.Exceptions;
-using DineFlow.Domain.Entities;
+using DineFlow.Domain.Entities.Orders;
+using DineFlow.Domain.Entities.OrderItems;
 using FluentAssertions;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;

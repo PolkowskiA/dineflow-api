@@ -1,8 +1,9 @@
-﻿using DineFlow.Domain.Entities;
+﻿using DineFlow.Domain.Entities.OrderItems;
+using DineFlow.Domain.Entities.Orders;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace DineFlow.Infrastructure.Persistance.Configurations
+namespace DineFlow.Infrastructure.Persistence.Configurations
 {
     public class OrderConfiguration : IEntityTypeConfiguration<Order>
     {
@@ -26,7 +27,9 @@ namespace DineFlow.Infrastructure.Persistance.Configurations
             builder.Property(x => x.ClosedAt);
 
             builder.Property(x => x.RowVersion)
-                .IsRowVersion();
+                .IsRowVersion()
+                .ValueGeneratedOnAddOrUpdate()
+                .IsRequired(false);
 
             builder.HasIndex(x => x.CreatedAt);
 
@@ -38,7 +41,7 @@ namespace DineFlow.Infrastructure.Persistance.Configurations
             builder.Navigation("_items")
                 .UsePropertyAccessMode(PropertyAccessMode.Field);
 
-            builder.Ignore(x => x.Items);
+            builder.Ignore(static x => x.Items);
         }
     }
 }

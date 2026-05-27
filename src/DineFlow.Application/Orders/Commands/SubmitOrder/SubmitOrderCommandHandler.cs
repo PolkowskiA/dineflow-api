@@ -4,23 +4,35 @@ using MediatR;
 
 namespace DineFlow.Application.Orders.Commands.SubmitOrder
 {
-    public class SubmitOrderCommandHandler : IRequestHandler<SubmitOrderCommand>
+    public class SubmitOrderCommandHandler
+     : IRequestHandler<SubmitOrderCommand>
     {
         private readonly IOrderRepository _orderRepository;
 
-        public SubmitOrderCommandHandler(IOrderRepository orderRepository)
+        public SubmitOrderCommandHandler(
+            IOrderRepository orderRepository)
         {
             _orderRepository = orderRepository;
         }
 
-        public Task Handle(SubmitOrderCommand request, CancellationToken cancellationToken)
+        public async Task Handle(
+            SubmitOrderCommand request,
+            CancellationToken cancellationToken)
         {
-            var order = _orderRepository.GetById(request.OrderId)
-                ?? throw new NotFoundException($"Order '{request.OrderId}' not found.");
+            var order = await _orderRepository.GetByIdAsync(
+                request.OrderId,
+                cancellationToken);
 
-            order.Submit(request.ActorId);
+            if (order is null)
+            {
+                throw new InvalidOperationException(
+                    $"Order '{request.OrderId}' not found.");
+            }
 
-            return Task.CompletedTask;
+            order.Submit();
+
+            await _orderRepository.SaveChangesAsync(
+                cancellationToken);
         }
     }
 }

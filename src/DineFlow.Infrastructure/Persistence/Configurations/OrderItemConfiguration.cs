@@ -1,11 +1,8 @@
-﻿using DineFlow.Domain.Entities;
+﻿using DineFlow.Domain.Entities.OrderItems;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace DineFlow.Infrastructure.Persistance.Configurations
+namespace DineFlow.Infrastructure.Persistence.Configurations
 {
     public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
     {
@@ -26,22 +23,29 @@ namespace DineFlow.Infrastructure.Persistance.Configurations
                 .HasPrecision(18, 2);
 
             builder.Property(x => x.Quantity)
-                .IsRequired();
+                .IsRequired()
+                .HasDefaultValue(0);
 
             builder.Property(x => x.InPreparationQuantity)
-                .IsRequired();
+                .IsRequired()
+                .HasDefaultValue(0);
 
             builder.Property(x => x.ReadyQuantity)
-                .IsRequired();
+                .IsRequired()
+                .HasDefaultValue(0);
 
             builder.Property(x => x.ServedQuantity)
-                .IsRequired();
+                .IsRequired()
+                .HasDefaultValue(0);
 
             builder.Property(x => x.CancelledQuantity)
-                .IsRequired();
+                .IsRequired()
+                .HasDefaultValue(0);
 
             builder.Property(x => x.RowVersion)
-                .IsRowVersion();
+                .IsRowVersion()
+                .ValueGeneratedOnAddOrUpdate()
+                .IsRequired(false);
 
             builder.Ignore(x => x.Status);
 
@@ -50,8 +54,6 @@ namespace DineFlow.Infrastructure.Persistance.Configurations
             builder.Ignore(x => x.PendingQuantity);
 
             builder.HasIndex("OrderId");
-
-            builder.HasIndex(x => x.ProductId);
         }
     }
 }

@@ -1,33 +1,34 @@
-using DineFlow.Application.Common.Orders;
-using DineFlow.Application.Common.Products;
+using DineFlow.API.Extensions;
+using DineFlow.API.Services;
 using DineFlow.Application.Common;
 using DineFlow.Application.Common.Exceptions;
+using DineFlow.Application.Common.Orders;
+using DineFlow.Application.Common.Products;
 using DineFlow.Application.Orders.Commands.CreateOrder;
-using DineFlow.API.Services;
 using DineFlow.Domain.Common.Exceptions;
+using DineFlow.Infrastructure.Persistence;
+using DineFlow.Infrastructure.Persistence.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 using Scalar.AspNetCore;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
-using DineFlow.API.Extensions;
-using DineFlow.Infrastructure.Persistance;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddSingleton<IOrderRepository, FakeOrderRepository>();
-builder.Services.AddSingleton<IProductService, FakeProductService>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserContext, ApiUserContext>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-   options.UseSqlServer(
-       builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
 builder.Services.AddControllers()

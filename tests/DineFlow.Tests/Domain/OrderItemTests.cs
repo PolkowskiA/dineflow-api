@@ -1,5 +1,5 @@
 using DineFlow.Domain;
-using DineFlow.Domain.Entities;
+using DineFlow.Domain.Entities.OrderItems;
 using FluentAssertions;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;

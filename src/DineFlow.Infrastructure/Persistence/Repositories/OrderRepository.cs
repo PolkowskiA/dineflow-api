@@ -26,7 +26,7 @@ namespace DineFlow.Infrastructure.Persistence.Repositories
             CancellationToken cancellationToken = default)
         {
             return await _dbContext.Orders
-                .Include("_items")
+                .Include(x => x.Items)
                 .FirstOrDefaultAsync(
                     x => x.Id == orderId,
                     cancellationToken);

@@ -33,15 +33,13 @@ namespace DineFlow.Infrastructure.Persistence.Configurations
 
             builder.HasIndex(x => x.CreatedAt);
 
-            builder.HasMany<OrderItem>("_items")
+            builder.HasMany(x => x.Items)
                 .WithOne()
                 .HasForeignKey("OrderId")
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Navigation("_items")
+            builder.Navigation(x => x.Items)
                 .UsePropertyAccessMode(PropertyAccessMode.Field);
-
-            builder.Ignore(static x => x.Items);
         }
     }
 }

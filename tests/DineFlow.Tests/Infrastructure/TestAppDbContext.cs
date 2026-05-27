@@ -6,7 +6,7 @@ using DineFlow.Domain.Entities.Orders;
 using DineFlow.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace DineFlow.Tests
+namespace DineFlow.Tests.Infrastructure
 {
     public class TestAppDbContext : AppDbContext
     {

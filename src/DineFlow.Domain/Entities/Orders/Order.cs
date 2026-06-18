@@ -95,6 +95,14 @@ namespace DineFlow.Domain.Entities.Orders
 
         public void CancelItem(Guid orderItemId, int quantity = 1, Guid? actorId = null)
         {
+            if (IsPaid)
+                throw new InvalidOperationException(
+                    "Paid order cannot be modified");
+
+            if (IsClosed)
+                throw new InvalidOperationException(
+                    "Closed order cannot be modified");
+
             GetItem(orderItemId).Cancel(quantity, actorId);
             Touch(actorId);
         }

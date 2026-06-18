@@ -184,6 +184,52 @@ namespace DineFlow.Tests.Domain
             property!.GetCustomAttribute<TimestampAttribute>().Should().NotBeNull();
         }
 
+        [Fact]
+        public void Should_Be_InProgress_When_Item_Is_Partially_Served()
+        {
+            var order = new Order(OrderType.Takeaway, null);
+            var item = new OrderItem(Guid.NewGuid(), "Burger", 10, 3);
+
+            order.AddItem(item);
+
+            order.Submit();
+
+            order.StartItemPreparation(item.Id, 3);
+            order.MarkItemReady(item.Id, 3);
+            order.ServeItem(item.Id, 1);
+
+            order.GetStatus().Should().Be(OrderStatus.InProgress);
+        }
+
+        [Fact]
+        public void Should_Not_Submit_Order_With_Only_Cancelled_Items()
+        {
+            var order = new Order(OrderType.Takeaway, null);
+
+            var item = new OrderItem(Guid.NewGuid(), "Burger", 10, 1);
+
+            order.AddItem(item);
+            order.CancelItem(item.Id);
+
+            var act = () => order.Submit();
+
+            act.Should()
+                .Throw<OrderCannotBeSubmittedException>();
+        }
+
+        [Fact]
+        public void Should_Not_Cancel_Item_After_Order_Is_Paid()
+        {
+            var order = CreateCompletedOrder();
+            var item = order.Items.First();
+
+            order.MarkPaid();
+
+            var act = () => order.CancelItem(item.Id);
+
+            act.Should().Throw<InvalidOperationException>();
+        }
+
         private static Order CreateOrderWithItem()
         {
             var order = new Order(OrderType.Takeaway, null);

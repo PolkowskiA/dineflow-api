@@ -53,7 +53,7 @@ namespace DineFlow.Application.Orders.Commands.AddItemToOrder
                 product.Price,
                 request.Quantity);
 
-            order.AddItem(orderItem);
+            order.AddItem(orderItem, request.ActorId);
 
             await _orderRepository.SaveChangesAsync(
                 cancellationToken);

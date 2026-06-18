@@ -41,6 +41,8 @@ namespace DineFlow.Domain.Entities.Products
             {
                 throw new ArgumentException("Price cannot be negative", nameof(price));
             }
+
+            Price = price;
         }
 
         public void Disable()

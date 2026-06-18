@@ -10,42 +10,15 @@ namespace DineFlow.Application.Orders.Commands.CreateOrder
      : IRequestHandler<CreateOrderCommand, Guid>
     {
         private readonly IOrderRepository _orderRepository;
-        private readonly IProductRepository _productRepository;
 
-        public CreateOrderCommandHandler(IOrderRepository orderRepository, IProductRepository productRepository)
+        public CreateOrderCommandHandler(IOrderRepository orderRepository)
         {
             _orderRepository = orderRepository;
-            _productRepository = productRepository;
         }
 
         public async Task<Guid> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
         {
-            var order = new Order(request.Type, request.TableId);
-
-            foreach (var item in request.Items)
-            {
-                var product = await _productRepository.GetByIdAsync(
-                    item.ProductId,
-                    cancellationToken);
-
-                if (product is null)
-                    throw new InvalidOperationException(
-                        $"Product '{item.ProductId}' not found.");
-
-                if (!product.IsAvailable)
-                    throw new InvalidOperationException(
-                        $"Product '{product.Name}' is unavailable.");
-
-                var orderItem = new OrderItem(
-                    product.Id,
-                    product.Name,
-                    product.Price,
-                    item.Quantity);
-
-                order.AddItem(orderItem);
-            }
-
-            order.Submit();
+            var order = new Order(request.Type, request.TableId, request.ActorId);
 
             await _orderRepository.AddAsync(
                 order,

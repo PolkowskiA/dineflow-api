@@ -36,18 +36,15 @@ namespace DineFlow.API.Controllers
             if (request.Type is null)
                 return BadRequest("Order type is required.");
 
-            if (request.Items.Count == 0)
-                return BadRequest("Order must contain at least one item.");
-
             var orderType = MapOrderType(request.Type.Value);
             var validationError = ValidateTable(orderType, request.TableId);
             if (validationError is not null)
                 return BadRequest(validationError);
 
             var command = new CreateOrderCommand(
-                orderType,
-                [.. request.Items.Select(x => new CreateOrderItemDto(x.ProductId, x.Quantity))],
-                ResolveActorId(request.ActorId));
+                Type: orderType,
+                TableId: request.TableId,
+                ActorId: ResolveActorId(request.ActorId));
 
             var id = await _mediator.Send(command, cancellationToken);
 

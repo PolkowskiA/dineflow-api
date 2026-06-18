@@ -29,7 +29,7 @@ namespace DineFlow.Application.Orders.Commands.SubmitOrder
                     $"Order '{request.OrderId}' not found.");
             }
 
-            order.Submit();
+            order.Submit(request.ActorId);
 
             await _orderRepository.SaveChangesAsync(
                 cancellationToken);

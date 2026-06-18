@@ -1,4 +1,3 @@
-using DineFlow.Application.Common.Exceptions;
 using DineFlow.Application.Common.Orders;
 using MediatR;
 
@@ -13,14 +12,22 @@ namespace DineFlow.Application.Orders.Commands.PayOrder
             _orderRepository = orderRepository;
         }
 
-        public Task Handle(PayOrderCommand request, CancellationToken cancellationToken)
+        public async Task Handle(PayOrderCommand request, CancellationToken cancellationToken)
         {
-            var order = _orderRepository.GetById(request.OrderId)
-                ?? throw new NotFoundException($"Order '{request.OrderId}' not found.");
+            var order = await _orderRepository.GetByIdAsync(
+                request.OrderId,
+                cancellationToken);
 
-            order.MarkPaid(request.ActorId);
+            if (order is null)
+            {
+                throw new InvalidOperationException(
+                    $"Order '{request.OrderId}' not found.");
+            }
 
-            return Task.CompletedTask;
+            order.MarkPaid();
+
+            await _orderRepository.SaveChangesAsync(
+                cancellationToken);
         }
     }
 }

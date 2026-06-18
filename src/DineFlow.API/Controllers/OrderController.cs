@@ -41,7 +41,11 @@ namespace DineFlow.API.Controllers
             if (validationError is not null)
                 return BadRequest(validationError);
 
-            var command = new CreateOrderCommand(orderType, request.TableId, ResolveActorId(request.ActorId));
+            var command = new CreateOrderCommand(
+                Type: orderType,
+                TableId: request.TableId,
+                ActorId: ResolveActorId(request.ActorId));
+
             var id = await _mediator.Send(command, cancellationToken);
 
             return Ok(new CreateOrderResponse { Id = id });

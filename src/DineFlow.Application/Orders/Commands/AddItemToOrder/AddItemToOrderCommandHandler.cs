@@ -1,7 +1,7 @@
-using DineFlow.Application.Common.Exceptions;
 using DineFlow.Application.Common.Orders;
 using DineFlow.Application.Common.Products;
 using DineFlow.Domain.Entities;
+using DineFlow.Domain.Entities.OrderItems;
 using MediatR;
 
 namespace DineFlow.Application.Orders.Commands.AddItemToOrder
@@ -9,37 +9,54 @@ namespace DineFlow.Application.Orders.Commands.AddItemToOrder
     public class AddItemToOrderCommandHandler : IRequestHandler<AddItemToOrderCommand>
     {
         private readonly IOrderRepository _orderRepository;
-        private readonly IProductService _productService;
+        private readonly IProductRepository _productRepository;
 
         public AddItemToOrderCommandHandler(
             IOrderRepository orderRepository,
-            IProductService productService)
+            IProductRepository productRepository)
         {
             _orderRepository = orderRepository;
-            _productService = productService;
+            _productRepository = productRepository;
         }
 
-        public Task Handle(AddItemToOrderCommand request, CancellationToken cancellationToken)
+        public async Task Handle(AddItemToOrderCommand request, CancellationToken cancellationToken)
         {
-            var order = _orderRepository.GetById(request.OrderId);
+            var order = await _orderRepository.GetByIdAsync(
+                request.OrderId,
+                cancellationToken);
+
             if (order is null)
-                throw new NotFoundException($"Order '{request.OrderId}' not found.");
-
-            ProductDto product;
-            try
             {
-                product = _productService.GetById(request.ProductId);
-            }
-            catch (KeyNotFoundException)
-            {
-                throw new NotFoundException($"Product '{request.ProductId}' not found.");
+                throw new InvalidOperationException(
+                    $"Order '{request.OrderId}' not found.");
             }
 
-            var orderItem = new OrderItem(product.Id, product.Name, product.Price, request.Quantity);
+            var product = await _productRepository.GetByIdAsync(
+                request.ProductId,
+                cancellationToken);
+
+            if (product is null)
+            {
+                throw new InvalidOperationException(
+                    $"Product '{request.ProductId}' not found.");
+            }
+
+            if (!product.IsAvailable)
+            {
+                throw new InvalidOperationException(
+                    $"Product '{product.Name}' is unavailable.");
+            }
+
+            var orderItem = new OrderItem(
+                product.Id,
+                product.Name,
+                product.Price,
+                request.Quantity);
 
             order.AddItem(orderItem, request.ActorId);
 
-            return Task.CompletedTask;
+            await _orderRepository.SaveChangesAsync(
+                cancellationToken);
         }
     }
 }

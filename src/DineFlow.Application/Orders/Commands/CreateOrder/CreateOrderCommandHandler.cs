@@ -1,10 +1,13 @@
 using DineFlow.Application.Common.Orders;
-using DineFlow.Domain.Entities;
+using DineFlow.Application.Common.Products;
+using DineFlow.Domain.Entities.OrderItems;
+using DineFlow.Domain.Entities.Orders;
 using MediatR;
 
 namespace DineFlow.Application.Orders.Commands.CreateOrder
 {
-    public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Guid>
+    public class CreateOrderCommandHandler
+     : IRequestHandler<CreateOrderCommand, Guid>
     {
         private readonly IOrderRepository _orderRepository;
 
@@ -13,13 +16,18 @@ namespace DineFlow.Application.Orders.Commands.CreateOrder
             _orderRepository = orderRepository;
         }
 
-        public Task<Guid> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
+        public async Task<Guid> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
         {
             var order = new Order(request.Type, request.TableId, request.ActorId);
 
-            _orderRepository.Add(order);
+            await _orderRepository.AddAsync(
+                order,
+                cancellationToken);
 
-            return Task.FromResult(order.Id);
+            await _orderRepository.SaveChangesAsync(
+                cancellationToken);
+
+            return order.Id;
         }
     }
 }
